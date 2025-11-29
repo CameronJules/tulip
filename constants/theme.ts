@@ -8,6 +8,14 @@ import { Platform } from 'react-native';
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+export const MoodColors = {
+  red: '#FF6B6B',
+  yellow: '#FFD93D',
+  green: '#6BCF7F',
+  gray: '#E0E0E0',
+  blue: '#4A90E2',
+};
+
 export const Colors = {
   light: {
     text: '#11181C',
@@ -16,6 +24,16 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    // Mood colors
+    moodRed: MoodColors.red,
+    moodYellow: MoodColors.yellow,
+    moodGreen: MoodColors.green,
+    // Activity and UI colors
+    activityDot: MoodColors.blue,
+    activityDotEmpty: MoodColors.gray,
+    inputBorder: '#4A90E2',
+    cardBorder: '#E0E0E0',
+    cardBorderDashed: '#CCCCCC',
   },
   dark: {
     text: '#ECEDEE',
@@ -24,6 +42,16 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    // Mood colors
+    moodRed: MoodColors.red,
+    moodYellow: MoodColors.yellow,
+    moodGreen: MoodColors.green,
+    // Activity and UI colors
+    activityDot: '#6BA3E8',
+    activityDotEmpty: '#404040',
+    inputBorder: '#6BA3E8',
+    cardBorder: '#333333',
+    cardBorderDashed: '#555555',
   },
 };
 
