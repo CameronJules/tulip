@@ -17,6 +17,13 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
+        name="suggestions"
+        options={{
+          title: 'Suggestions',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
@@ -24,17 +31,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="insights"
         options={{
           title: 'Insights',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="brain.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null, // Hide from tabs
         }}
       />
     </Tabs>

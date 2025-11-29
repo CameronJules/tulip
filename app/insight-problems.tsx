@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useInsights } from '@/hooks/use-insights';
+import ProblemsIcon from '@/assets/images/insights/problems.svg';
 
 export default function InsightProblemsScreen() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -34,6 +35,9 @@ export default function InsightProblemsScreen() {
       <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
         <ScrollView style={styles.scrollView}>
           <ThemedView style={styles.content}>
+            {/* Insight Image */}
+            <ProblemsIcon width={200} height={200} style={styles.insightImage} />
+
             {/* Download Progress */}
             {isDownloadingModel && (
               <ThemedView style={styles.downloadingContainer}>
@@ -84,6 +88,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   scrollView: { flex: 1 },
   content: { flex: 1, padding: 16 },
+  insightImage: { width: 200, height: 200, alignSelf: 'center', marginBottom: 24 },
   downloadingContainer: { alignItems: 'center', marginTop: 48 },
   downloadingText: { marginTop: 16, fontSize: 14, opacity: 0.7 },
   generatingContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },

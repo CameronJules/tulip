@@ -32,8 +32,18 @@ export interface CacheData<T> {
 }
 
 export interface InsightsCache extends CacheData<string> {}
-export interface SuggestionsCache extends CacheData<SuggestionsByCategory> {}
+export interface SuggestionsCache extends CacheData<SuggestionsData> {}
 
+export interface SuggestionsData {
+  repeatedFrictionPoints: string[];
+  highlightMomentum: string[];
+  emergingOpportunities: string[];
+  timestamp: string;        // ISO timestamp of generation
+  entryCount: number;       // Number of entries analyzed
+  lastEntryDate: string;    // Most recent entry date (YYYY-MM-DD)
+}
+
+// Legacy type for backwards compatibility
 export interface SuggestionsByCategory {
   [category: string]: string[];
 }
