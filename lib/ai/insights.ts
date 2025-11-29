@@ -1,6 +1,6 @@
 import { getLastNDaysEntries } from '@/lib/models/journal-entry';
 import { getCache, saveCache } from '@/lib/storage/async-storage';
-import { INSIGHT_PROMPTS } from './prompts';
+import { MONTHLY_INSIGHT_PROMPTS } from './prompts_v2';
 import ModelManager from './model-manager';
 import { AI_CONFIG, AI_ERROR_MESSAGES, INSIGHT_TYPE_TO_CACHE_KEY, type InsightType } from '@/constants/ai';
 import type { InsightCacheData } from '@/lib/models/types';
@@ -37,12 +37,34 @@ export async function generateInsight(
     // 3. Get or create Cactus instance
     const cactusLM = await ModelManager.getInstance().getOrCreateInstance();
 
-    // 4. Generate with streaming
-    const prompt = INSIGHT_PROMPTS[type];
+    // 4. Calculate date range for RAG
+    const dates = entries.map(e => e.date).sort();
+    const startDate = dates[0]; // Oldest date
+    const endDate = dates[dates.length - 1]; // Newest date
+
+    // 5. Map legacy types to new types (temporary during migration)
+    const promptTypeMap: Record<string, keyof typeof MONTHLY_INSIGHT_PROMPTS> = {
+      themes: 'rememberPatterns',
+      moments: 'emotionalThemes',
+      problems: 'unresolvedProblems',
+      progress: 'progressTrends',
+      deprioritized: 'lettingGo',
+      // New types map directly
+      rememberPatterns: 'rememberPatterns',
+      emotionalThemes: 'emotionalThemes',
+      unresolvedProblems: 'unresolvedProblems',
+      progressTrends: 'progressTrends',
+      lettingGo: 'lettingGo',
+    };
+
+    const promptType = promptTypeMap[type];
+    const prompt = MONTHLY_INSIGHT_PROMPTS[promptType];
+
+    // 6. Generate with streaming
     const result = await cactusLM.complete({
       messages: [
         { role: 'system', content: prompt.systemMessage },
-        { role: 'user', content: prompt.userPrompt(entries.length) }
+        { role: 'user', content: prompt.userPrompt(entries.length, startDate, endDate) }
       ],
       onToken,
       options: {
@@ -51,7 +73,7 @@ export async function generateInsight(
       }
     });
 
-    // 5. Cache the result
+    // 7. Cache the result
     const cacheData: InsightCacheData = {
       timestamp: new Date().toISOString(),
       insightType: type,

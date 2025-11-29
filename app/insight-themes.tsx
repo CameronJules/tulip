@@ -11,6 +11,7 @@ export default function InsightThemesScreen() {
   const {
     insight,
     isGenerating,
+    isAnalyzing,
     isDownloadingModel,
     downloadProgress,
     error,
@@ -44,7 +45,7 @@ export default function InsightThemesScreen() {
             )}
 
             {/* Generating State */}
-            {isGenerating && !isDownloadingModel && (
+            {(isAnalyzing || (isGenerating && !insight)) && !isDownloadingModel && (
               <ThemedView style={styles.generatingContainer}>
                 <ActivityIndicator size="small" />
                 <ThemedText style={styles.generatingText}>

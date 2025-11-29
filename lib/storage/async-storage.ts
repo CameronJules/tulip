@@ -58,11 +58,19 @@ export async function invalidateCache(key: string): Promise<void> {
 export async function invalidateAllAICaches(): Promise<void> {
   try {
     await AsyncStorage.multiRemove([
+      // Legacy insight caches
       STORAGE_KEYS.INSIGHT_THEMES_CACHE,
       STORAGE_KEYS.INSIGHT_MOMENTS_CACHE,
       STORAGE_KEYS.INSIGHT_PROBLEMS_CACHE,
       STORAGE_KEYS.INSIGHT_PROGRESS_CACHE,
       STORAGE_KEYS.INSIGHT_DEPRIORITIZED_CACHE,
+      // New monthly insight caches
+      STORAGE_KEYS.INSIGHT_REMEMBER_PATTERNS_CACHE,
+      STORAGE_KEYS.INSIGHT_EMOTIONAL_THEMES_CACHE,
+      STORAGE_KEYS.INSIGHT_UNRESOLVED_PROBLEMS_CACHE,
+      STORAGE_KEYS.INSIGHT_PROGRESS_TRENDS_CACHE,
+      STORAGE_KEYS.INSIGHT_LETTING_GO_CACHE,
+      // Suggestions cache
       STORAGE_KEYS.SUGGESTIONS_CACHE,
     ]);
 
