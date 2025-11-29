@@ -37,3 +37,11 @@ export interface SuggestionsCache extends CacheData<SuggestionsByCategory> {}
 export interface SuggestionsByCategory {
   [category: string]: string[];
 }
+
+export interface InsightCacheData {
+  timestamp: string;        // ISO timestamp of generation
+  insightType: string;      // 'themes' | 'moments' | etc.
+  entryCount: number;       // Number of entries analyzed
+  content: string;          // Generated insight text
+  lastEntryDate: string;    // Most recent entry date (YYYY-MM-DD)
+}

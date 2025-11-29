@@ -250,8 +250,97 @@ INTENTIONS:
 - All database operations auto-sync to corpus files
 - Fixed deprecated `expo-file-system` API (now using `/legacy` import)
 
+### Phase 3: AI-Powered Insights (✅ COMPLETED)
+
+**Overview:**
+Integrated Cactus LLM to generate AI-powered insights with streaming token responses. Implementation leverages existing corpus files for RAG, implements smart caching, and provides real-time streaming UX.
+
+**AI Layer Files:**
+- `constants/ai.ts` - AI configuration (model: qwen3-0.6, context: 2048, maxTokens: 512), InsightType enum, cache key mapping, error messages
+- `lib/ai/prompts.ts` - 5 specialized system prompts (themes, moments, problems, progress, deprioritized)
+- `lib/ai/model-manager.ts` - Singleton CactusLM lifecycle manager with download tracking
+- `lib/ai/insights.ts` - Core insight generation with caching and streaming support
+- `hooks/use-insights.ts` - React hook for insight state management (loading, progress, errors, streaming)
+
+**Insight Modal Screens:**
+- `app/insight-themes.tsx` - "Themes You Marked as Important" (sections 1, 3, 6)
+- `app/insight-moments.tsx` - "Meaningful Moments & Emotional Patterns" (sections 2, 4)
+- `app/insight-problems.tsx` - "Core Problems & Unsolved Threads" (section 3)
+- `app/insight-progress.tsx` - "Progress, Competence & Growth" (sections 4, 6)
+- `app/insight-deprioritized.tsx` - "Things You Deprioritized or Let Go Of" (section 5)
+
+**Updated Files:**
+- `constants/storage.ts` - Added 5 insight cache keys (INSIGHT_THEMES_CACHE, etc.)
+- `lib/models/types.ts` - Added InsightCacheData interface (timestamp, insightType, entryCount, content, lastEntryDate)
+- `lib/storage/async-storage.ts` - Expanded invalidateAllAICaches() to include all 5 insight caches
+- `app/_layout.tsx` - Added background model download on app initialization
+
+**Key Features:**
+- **Smart Caching** - Insights cached until journal entries change (create/update/delete invalidates all caches)
+- **Streaming UX** - Real-time token display as they're generated via onToken callback
+- **RAG Integration** - Automatically uses corpus files from `${FileSystem.documentDirectory}corpus/`
+- **Proactive Download** - Model downloads in background on app launch, non-blocking
+- **Download Progress** - Visual feedback during model download (percentage display)
+- **Entry Count Display** - Shows "Based on X days of entries" above each insight
+- **Error Handling** - Graceful error states with retry capability
+- **Generating State** - Shows spinner and "Analyzing your entries..." message
+- **No Entries State** - Shows helpful message when no journal entries exist
+
+**CactusLM API Usage:**
+```typescript
+// Correct API (from cactus-react-native docs)
+const cactusLM = new CactusLM({
+  model: 'qwen3-0.6',
+  contextSize: 2048,
+  corpusDir: CORPUS_DIR,
+});
+
+// Download (returns immediately if already present)
+await cactusLM.download({ onProgress: (p) => console.log(p) });
+
+// Initialize
+await cactusLM.init();
+
+// Complete with streaming
+const result = await cactusLM.complete({
+  messages: [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt }
+  ],
+  onToken: (token) => setInsight(prev => prev + token),
+  options: { temperature: 0.7, maxTokens: 512 }
+});
+
+// Check download status
+const models = await cactusLM.getModels();
+const isDownloaded = models.find(m => m.name === 'qwen3-0.6')?.isDownloaded;
+```
+
+**Insight Prompts:**
+Each insight type has a specialized system prompt with specific guidelines:
+1. **Themes** - Sleep scientist analyzing recurring themes in sections 1, 3, 6
+2. **Moments** - Sleep scientist analyzing emotional patterns in sections 2, 4
+3. **Problems** - Cognitive psychologist analyzing persistent challenges in section 3
+4. **Progress** - Growth mindset coach analyzing achievements in sections 4, 6
+5. **Deprioritized** - Cognitive load expert analyzing patterns in section 5
+
+All prompts:
+- Generate 2-4 concise paragraphs
+- Quote specific dates (e.g., "On 2025-11-25, you noted...")
+- Use second person ("you"), conversational tone
+- Acknowledge limited data if <3 entries
+- Focus on patterns, not solutions (except Progress which is encouraging)
+
+**Important Implementation Notes:**
+- ❌ `cactusLM.isDownloaded()` does NOT exist - use `getModels()` instead
+- ✅ `download()` returns immediately if model already present - no need to check first
+- ✅ Model manager uses singleton pattern to prevent multiple downloads
+- ✅ All 5 insight caches invalidated on any journal entry change
+- ✅ Insights analyze last 5 days of entries (configurable in insights.ts)
+- ✅ Cached insights return immediately without re-generation
+
 ### Next Steps
-1. Implement Phase 3: Insights (Cactus LLM integration)
+1. ~~Implement Phase 3: Insights (Cactus LLM integration)~~ ✅ COMPLETED
 2. Implement Phase 4: Suggestions (CSV-formatted output)
 3. Implement Phase 5: Polish and testing
 4. Replace Explore tab with Suggestions and Insights tabs
@@ -263,5 +352,6 @@ INTENTIONS:
 - Custom splash screen is configured via `expo-splash-screen` plugin with separate light/dark backgrounds
 - The app scheme is `tulip://` for deep linking
 - **IMPORTANT**: Use `expo-file-system/legacy` instead of `expo-file-system` to avoid deprecation warnings
-- Phase 2 implementation plan: `~/.claude/plans/cozy-watching-teacup.md`
-- Original foundation plan: `~/.claude/plans/harmonic-drifting-feather.md`
+- Phase 1 (Foundation) plan: `~/.claude/plans/harmonic-drifting-feather.md`
+- Phase 2 (Home Section) plan: `~/.claude/plans/cozy-watching-teacup.md`
+- Phase 3 (AI Insights) plan: `~/.claude/plans/elegant-singing-teapot.md`
