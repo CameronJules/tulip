@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useState } from 'react';
 
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
@@ -8,8 +9,30 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { backfillJournalEntries } from '@/lib/utils/backfill-data';
 
 export default function TabTwoScreen() {
+  const [isBackfilling, setIsBackfilling] = useState(false);
+
+  const handleBackfill = async () => {
+    if (isBackfilling) return;
+
+    try {
+      setIsBackfilling(true);
+      const result = await backfillJournalEntries();
+      Alert.alert(
+        'Backfill Complete',
+        `Created ${result.created} entries\nSkipped ${result.skipped} entries`,
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to backfill entries. Check console for details.');
+      console.error('Backfill error:', error);
+    } finally {
+      setIsBackfilling(false);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -30,6 +53,23 @@ export default function TabTwoScreen() {
           Explore
         </ThemedText>
       </ThemedView>
+
+      {/* DEV: Backfill Data */}
+      <ThemedView style={styles.backfillContainer}>
+        <ThemedText style={styles.backfillTitle}>Developer Tools</ThemedText>
+        <TouchableOpacity
+          style={[styles.backfillButton, isBackfilling && styles.backfillButtonDisabled]}
+          onPress={handleBackfill}
+          disabled={isBackfilling}>
+          <ThemedText style={styles.backfillButtonText}>
+            {isBackfilling ? 'Backfilling...' : 'Backfill 20 Journal Entries'}
+          </ThemedText>
+        </TouchableOpacity>
+        <ThemedText style={styles.backfillDescription}>
+          Adds 20 random journal entries from the last 30 days with software developer content
+        </ThemedText>
+      </ThemedView>
+
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
@@ -108,5 +148,39 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  backfillContainer: {
+    marginVertical: 16,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(111, 86, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: '#6F56FF',
+  },
+  backfillTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+    fontFamily: Fonts.rounded,
+  },
+  backfillButton: {
+    backgroundColor: '#6F56FF',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  backfillButtonDisabled: {
+    opacity: 0.5,
+  },
+  backfillButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: Fonts.rounded,
+  },
+  backfillDescription: {
+    fontSize: 12,
+    opacity: 0.7,
   },
 });

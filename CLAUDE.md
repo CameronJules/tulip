@@ -97,8 +97,8 @@ The app implements a light/dark mode theming system:
 - `components/home/mood-dot.tsx` - Colored mood indicator
 
 **Journal Components:**
-- `components/journal/themed-text-input.tsx` - Themed TextInput
-- `components/journal/journal-form.tsx` - Two-field journal entry form
+- `components/journal/themed-text-input.tsx` - Themed TextInput with focus state and custom styling
+- `components/journal/journal-form.tsx` - Six-field journal entry form with structured sections
 - `components/journal/mood-selector-modal.tsx` - Custom mood selection modal
 
 ### Platform-Specific Files
@@ -164,13 +164,13 @@ deleteJournalEntry(date: string): Promise<void>
 ### Phase 2: Home Section (✅ COMPLETED)
 
 **UI Components:**
-- `components/home/activity-grid.tsx` - 90-day activity tracker (18 dots × 5 rows)
-- `components/home/week-view.tsx` - Week view container with header + scrollable day list
-- `components/home/week-header.tsx` - Shows "X Entries on week YY"
+- `components/home/activity-grid.tsx` - 90-day activity tracker (18 dots × 5 rows, oldest to newest left-to-right, top-to-bottom)
+- `components/home/week-view.tsx` - 30-day scrollable view with dynamic week header
+- `components/home/week-header.tsx` - Shows "Entries for week XX" (dynamically updates on scroll)
 - `components/home/day-item.tsx` - Individual day row (date, time, mood dot, navigation)
 - `components/home/mood-dot.tsx` - Reusable mood indicator (16px circle, responsive sizing)
-- `components/journal/themed-text-input.tsx` - Themed TextInput with read-only support
-- `components/journal/journal-form.tsx` - Two-field form (remember tomorrow + meaningful moments)
+- `components/journal/themed-text-input.tsx` - Themed TextInput with focus state, custom styling, and read-only support
+- `components/journal/journal-form.tsx` - Six-field structured journal entry form
 - `components/journal/mood-selector-modal.tsx` - Custom modal for mood selection (bad/okay/good)
 
 **Routes:**
@@ -179,18 +179,38 @@ deleteJournalEntry(date: string): Promise<void>
 
 **Utilities:**
 - `lib/utils/date-helpers.ts` - Date formatting, parsing, and content helpers
+  - `formatContent()` - Formats all 6 journal sections with structured prefixes
+  - `extractRememberText()`, `extractMomentsText()`, `extractUnderstandingText()`, `extractWinsText()`, `extractDropText()`, `extractIntentionsText()` - Extract individual sections from stored content
+  - `getWeekNumber()` - ISO week number calculation
+  - Date formatting and validation utilities
 
 **Key Features:**
 - 90-day activity tracker (18 dots per row, 5 rows) covering ~3 months
-- Responsive dot sizing that spans full container width
-- Week view showing last 7 days with entry status and mood indicators
+  - Most recent day in bottom-right corner
+  - Oldest to newest flow: left-to-right, top-to-bottom
+  - Responsive dot sizing that spans full container width
+- 30-day scrollable week view with dynamic features:
+  - Loads last 30 days of entries
+  - Only 5 entries visible at rest (increased spacing)
+  - Starts scrolled to bottom (most recent entries)
+  - Dynamic sticky header: "Entries for week XX" updates as you scroll
+  - Week number calculated based on visible entries
 - "No Entry" state with dashed border for days without entries
 - Read-only mode for past dates (entries can only be created/edited for current day)
 - Custom mood selector modal (Bad/Okay/Good → Red/Yellow/Green)
-- Content stored with structured format: `REMEMBER:` and `MOMENTS:` prefixes
+- 6-field structured journal entry form with consistent styling
 - SafeAreaView integration to avoid system UI overlaps (notch, camera cutouts)
 - Auto-refresh on screen focus
 - Loading and error states with retry functionality
+
+**Journal Entry Form Structure:**
+The journal form includes 6 sections for comprehensive daily reflection:
+1. What I want to remember tomorrow
+2. Meaningful moments from today
+3. What I'm trying to understand or solve
+4. What went well today (small wins)
+5. What wasn't important and can be dropped
+6. Intentions for tomorrow
 
 **Content Format:**
 Journal entries are stored with structured prefixes:
@@ -199,7 +219,25 @@ REMEMBER: [what I want to remember tomorrow]
 
 MOMENTS:
 [meaningful moments from today]
+
+UNDERSTANDING:
+[what I'm trying to understand or solve]
+
+WINS:
+[what went well today (small wins)]
+
+DROP: [what wasn't important and can be dropped]
+
+INTENTIONS:
+[intentions for tomorrow]
 ```
+
+**Journal Input Styling:**
+- Background: #F5F5F5 (light gray)
+- Border: Transparent by default
+- Focus state: #6F56FF at 30% opacity (#6F56FF4D)
+- All inputs: 120px height with top-left text alignment
+- All inputs use multiline with textAlignVertical="top"
 
 **Navigation Flow:**
 1. Tap day item → Opens journal entry modal with date parameter

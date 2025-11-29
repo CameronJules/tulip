@@ -46,7 +46,7 @@ export function ActivityGrid({ activityDays }: ActivityGridProps) {
       <ThemedText style={styles.title}>Activity</ThemedText>
       <View style={[styles.grid, { gap: DOT_GAP }]}>
         {gridDays.map((day, index) => (
-          <MoodDot key={index} hasEntry={day.hasEntry} mood={day.mood} size={DOT_SIZE} />
+          <MoodDot key={index} hasEntry={day.hasEntry} mood={day.mood} size={DOT_SIZE} variant="activity" />
         ))}
       </View>
     </View>

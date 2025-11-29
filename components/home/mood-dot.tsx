@@ -8,14 +8,21 @@ export type MoodDotProps = {
   hasEntry: boolean;
   mood: MoodType | null;
   size?: number;
+  variant?: 'activity' | 'mood';
 };
 
-export function MoodDot({ hasEntry, mood, size = 16 }: MoodDotProps) {
+export function MoodDot({ hasEntry, mood, size = 16, variant = 'mood' }: MoodDotProps) {
   const colorScheme = useColorScheme() ?? 'light';
 
   const getMoodColor = (): string => {
+    // Activity variant: purple for active days, gray for inactive
+    if (variant === 'activity') {
+      return hasEntry ? '#6F56FF' : '#333333';
+    }
+
+    // Mood variant: show mood-based colors
     if (!hasEntry) {
-      return Colors[colorScheme].activityDotEmpty; // Gray
+      return Colors[colorScheme].activityDotEmpty;
     }
 
     if (mood === 'red') {
@@ -31,7 +38,7 @@ export function MoodDot({ hasEntry, mood, size = 16 }: MoodDotProps) {
     }
 
     // Entry exists but no mood assigned yet
-    return Colors[colorScheme].activityDot; // Blue
+    return Colors[colorScheme].activityDot;
   };
 
   return (
