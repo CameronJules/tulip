@@ -25,7 +25,7 @@ export default function HomeScreen() {
     try {
       const [activity, entries] = await Promise.all([
         getActivityDaysForLastNDays(90),
-        getLastNDaysEntries(7),
+        getLastNDaysEntries(30),
       ]);
 
       setActivityDays(activity);

@@ -67,7 +67,14 @@ export function getWeekNumber(dateString: string): number {
 /**
  * Format journal entry content from form fields
  */
-export function formatContent(remember: string, moments: string): string {
+export function formatContent(
+  remember: string,
+  moments: string,
+  understanding: string,
+  wins: string,
+  drop: string,
+  intentions: string
+): string {
   const parts: string[] = [];
 
   if (remember.trim()) {
@@ -76,6 +83,22 @@ export function formatContent(remember: string, moments: string): string {
 
   if (moments.trim()) {
     parts.push(`MOMENTS:\n${moments.trim()}`);
+  }
+
+  if (understanding.trim()) {
+    parts.push(`UNDERSTANDING:\n${understanding.trim()}`);
+  }
+
+  if (wins.trim()) {
+    parts.push(`WINS:\n${wins.trim()}`);
+  }
+
+  if (drop.trim()) {
+    parts.push(`DROP: ${drop.trim()}`);
+  }
+
+  if (intentions.trim()) {
+    parts.push(`INTENTIONS:\n${intentions.trim()}`);
   }
 
   return parts.join('\n\n');
@@ -93,6 +116,38 @@ export function extractRememberText(content: string): string {
  * Extract "meaningful moments" text from journal entry content
  */
 export function extractMomentsText(content: string): string {
-  const match = content.match(/MOMENTS:\s*(.+?)$/s);
+  const match = content.match(/MOMENTS:\s*(.+?)(?:\n\n|$)/s);
+  return match ? match[1].trim() : '';
+}
+
+/**
+ * Extract "what I'm trying to understand or solve" text from journal entry content
+ */
+export function extractUnderstandingText(content: string): string {
+  const match = content.match(/UNDERSTANDING:\s*(.+?)(?:\n\n|$)/s);
+  return match ? match[1].trim() : '';
+}
+
+/**
+ * Extract "what went well today (small wins)" text from journal entry content
+ */
+export function extractWinsText(content: string): string {
+  const match = content.match(/WINS:\s*(.+?)(?:\n\n|$)/s);
+  return match ? match[1].trim() : '';
+}
+
+/**
+ * Extract "what wasn't important and can be dropped" text from journal entry content
+ */
+export function extractDropText(content: string): string {
+  const match = content.match(/DROP:\s*(.+?)(?:\n\n|$)/s);
+  return match ? match[1].trim() : '';
+}
+
+/**
+ * Extract "intentions for tomorrow" text from journal entry content
+ */
+export function extractIntentionsText(content: string): string {
+  const match = content.match(/INTENTIONS:\s*(.+?)$/s);
   return match ? match[1].trim() : '';
 }

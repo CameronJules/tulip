@@ -14,6 +14,10 @@ import {
   formatContent,
   extractRememberText,
   extractMomentsText,
+  extractUnderstandingText,
+  extractWinsText,
+  extractDropText,
+  extractIntentionsText,
 } from '@/lib/utils/date-helpers';
 import {
   getJournalEntry,
@@ -29,6 +33,10 @@ export default function JournalEntryScreen() {
   const [entryDate, setEntryDate] = useState(dateParam || getTodayString());
   const [rememberText, setRememberText] = useState('');
   const [momentsText, setMomentsText] = useState('');
+  const [understandingText, setUnderstandingText] = useState('');
+  const [winsText, setWinsText] = useState('');
+  const [dropText, setDropText] = useState('');
+  const [intentionsText, setIntentionsText] = useState('');
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +60,10 @@ export default function JournalEntryScreen() {
           setExistingEntry(entry);
           setRememberText(extractRememberText(entry.content));
           setMomentsText(extractMomentsText(entry.content));
+          setUnderstandingText(extractUnderstandingText(entry.content));
+          setWinsText(extractWinsText(entry.content));
+          setDropText(extractDropText(entry.content));
+          setIntentionsText(extractIntentionsText(entry.content));
         }
       } catch (err) {
         console.error('Failed to load entry:', err);
@@ -64,7 +76,14 @@ export default function JournalEntryScreen() {
   }, [dateParam]);
 
   function validateForm(): string | null {
-    if (!rememberText.trim() && !momentsText.trim()) {
+    if (
+      !rememberText.trim() &&
+      !momentsText.trim() &&
+      !understandingText.trim() &&
+      !winsText.trim() &&
+      !dropText.trim() &&
+      !intentionsText.trim()
+    ) {
       return 'Please enter at least one field before saving';
     }
     return null;
@@ -86,7 +105,14 @@ export default function JournalEntryScreen() {
     setIsSaving(true);
 
     try {
-      const content = formatContent(rememberText, momentsText);
+      const content = formatContent(
+        rememberText,
+        momentsText,
+        understandingText,
+        winsText,
+        dropText,
+        intentionsText
+      );
       const formData = {
         date: entryDate,
         mood,
@@ -145,8 +171,16 @@ export default function JournalEntryScreen() {
             <JournalForm
               rememberText={rememberText}
               momentsText={momentsText}
+              understandingText={understandingText}
+              winsText={winsText}
+              dropText={dropText}
+              intentionsText={intentionsText}
               onRememberChange={setRememberText}
               onMomentsChange={setMomentsText}
+              onUnderstandingChange={setUnderstandingText}
+              onWinsChange={setWinsText}
+              onDropChange={setDropText}
+              onIntentionsChange={setIntentionsText}
               isReadOnly={isReadOnly}
             />
 

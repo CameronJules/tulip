@@ -11,9 +11,10 @@ export type DayItemProps = {
   date: string; // YYYY-MM-DD
   entry: JournalEntry | null;
   isToday: boolean;
+  onLayout?: (event: any) => void;
 };
 
-export function DayItem({ date, entry, isToday }: DayItemProps) {
+export function DayItem({ date, entry, isToday, onLayout }: DayItemProps) {
   const cardBorder = useThemeColor({}, 'cardBorder');
   const cardBorderDashed = useThemeColor({}, 'cardBorderDashed');
   const textColor = useThemeColor({}, 'text');
@@ -26,7 +27,11 @@ export function DayItem({ date, entry, isToday }: DayItemProps) {
   const displayTime = entry ? formatTimeForDisplay(entry.updatedAt) : null;
 
   return (
-    <Pressable onPress={handlePress} style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}>
+    <Pressable
+      onPress={handlePress}
+      style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+      onLayout={onLayout}
+    >
       <View
         style={[
           styles.container,
@@ -62,7 +67,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     marginHorizontal: 16,
-    marginVertical: 6,
+    marginVertical: 18,
     borderRadius: 8,
     borderWidth: 1,
   },

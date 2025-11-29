@@ -24,17 +24,19 @@ export function ActivityGrid({ activityDays }: ActivityGridProps) {
   const totalGapWidth = DOT_GAP * (DOTS_PER_ROW - 1);
   const DOT_SIZE = (containerWidth - totalGapWidth) / DOTS_PER_ROW;
 
-  // Sort by date descending (most recent first) and take first 90
+  // Sort by date ascending (oldest first) so newest appears in bottom-right
   const sortedDays = [...activityDays]
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, TOTAL_DAYS);
 
   // Fill to 90 dots if we have less (5 rows of 18)
+  // Fill from the END so empty dots appear at the beginning (top-left)
   const gridDays = Array(TOTAL_DAYS)
     .fill(null)
     .map((_, i) => {
-      if (i < sortedDays.length) {
-        return sortedDays[i];
+      const dataIndex = i - (TOTAL_DAYS - sortedDays.length);
+      if (dataIndex >= 0 && dataIndex < sortedDays.length) {
+        return sortedDays[dataIndex];
       }
       return { date: '', hasEntry: false, mood: null };
     });
