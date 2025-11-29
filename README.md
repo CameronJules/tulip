@@ -91,6 +91,10 @@ npm run lint
 
 # Reset to blank slate
 npm run reset-project
+
+# Build Android APK (arm64-v8a only)
+cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+# Output: android/app/build/outputs/apk/release/app-release.apk
 ```
 
 ## Documentation
